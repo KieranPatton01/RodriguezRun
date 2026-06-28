@@ -1,0 +1,23 @@
+{
+  "name": "rodrigezrun",
+  "version": "1.0.0",
+  "description": "RodriguezRun — Neo-Citadel Chronicles. A production-quality endless runner built with Phaser 3 + Vite PWA.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate-icons": "node public/generate-icons.js",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^8.1.0"
+  },
+  "dependencies": {
+    "phaser": "^4.2.0",
+    "vite-plugin-pwa": "^1.3.0",
+    "workbox-window": "^7.4.1"
+  }
+}

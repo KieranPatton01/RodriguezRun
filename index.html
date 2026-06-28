@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#00d4ff" />
+  <meta name="description" content="Rodriguez Run: Sara's Safestay Adventure — dodge obstacles, collect euros, and run through the streets of Madrid!" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Rodriguez Run" />
+  <meta property="og:title" content="Rodriguez Run — Sara's Safestay Adventure" />
+  <meta property="og:description" content="An endless runner through the streets of Madrid. Dodge obstacles, collect euros, and unlock characters!" />
+  <meta property="og:type" content="game" />
+
+  <title>Rodriguez Run — Sara's Safestay Adventure</title>
+  <link rel="icon" href="./icons/icons8-spain-bubbles-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="./icons/icons8-spain-bubbles-96.png" />
+
+  <!-- Preload Orbitron font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1b2a;
+      --accent: #00d4ff;
+      --font: 'Orbitron', monospace;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      overflow: hidden;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--font);
+    }
+
+    #game-container {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    /* Vignette overlay */
+    #game-container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 60%,
+        rgba(0, 0, 0, 0.5) 100%
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    canvas {
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
+    /* Loading fallback (before Phaser boots) */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      z-index: 9999;
+      transition: opacity 0.4s;
+    }
+    #preloader.hidden { opacity: 0; pointer-events: none; }
+    #preloader h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+    }
+    #preloader p {
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 4px;
+    }
+    #preloader .bar {
+      margin-top: 32px;
+      width: 200px;
+      height: 4px;
+      background: #16213e;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #preloader .bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: load 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 0 12px var(--accent);
+    }
+    @keyframes load {
+      from { width: 10%; }
+      to   { width: 90%; }
+    }
+
+    /* Desktop QR Code Prompt */
+    #desktop-qr-prompt {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(13, 27, 42, 0.9);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+      z-index: 1000;
+      font-family: 'Orbitron', monospace;
+      color: #fff;
+      max-width: 320px;
+      animation: slideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      animation-delay: 1s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #desktop-qr-prompt img {
+      width: 70px;
+      height: 70px;
+      border-radius: 6px;
+      background: #fff;
+      padding: 4px;
+    }
+
+    #desktop-qr-prompt .qr-text {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    #desktop-qr-prompt .qr-text a {
+      color: var(--accent);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    
+    #desktop-qr-prompt .qr-text a:hover {
+      text-decoration: underline;
+    }
+
+    #desktop-qr-prompt .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      color: #aaa;
+      font-size: 14px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    #desktop-qr-prompt .close-btn:hover {
+      color: #fff;
+    }
+
+    /* Hide on screens smaller than 768px (tablets/phones) */
+    @media (max-width: 768px) {
+      #desktop-qr-prompt {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HTML preloader shown before Phaser canvas is ready -->
+  <div id="preloader">
+    <h1>RODRIGUEZ</h1>
+    <p>R U N</p>
+    <div class="bar"><div class="bar-fill"></div></div>
+  </div>
+
+  <div id="game-container"></div>
+
+  <!-- Desktop-only QR Code Prompt -->
+  <div id="desktop-qr-prompt">
+    <div class="close-btn" onclick="document.getElementById('desktop-qr-prompt').remove()">✕</div>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://kieranpatton01.github.io/RodriguezRun/" alt="QR Code" />
+    <div class="qr-text">
+      <strong>Play on Mobile!</strong><br>
+      Install it on your phone by scanning this QR code or going to:<br>
+      <a href="https://kieranpatton01.github.io/RodriguezRun/" target="_blank">kieranpatton01.github.io/RodriguezRun/</a>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+  <script>
+    // Hide HTML preloader once Phaser canvas appears
+    const obs = new MutationObserver(() => {
+      if (document.querySelector('#game-container canvas')) {
+        document.getElementById('preloader').classList.add('hidden');
+        setTimeout(() => document.getElementById('preloader').remove(), 500);
+        obs.disconnect();
+      }
+    });
+    obs.observe(document.getElementById('game-container'), { childList: true });
+  </script>
+</body>
+</html>
