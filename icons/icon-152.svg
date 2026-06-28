@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="152" height="152" viewBox="0 0 152 152">
+  <rect width="152" height="152" fill="#0d1b2a"/>
+  <polygon points="131.3,44.1 131.3,107.9 76.0,139.8 20.7,107.9 20.7,44.1 76.0,12.2" fill="#00d4ff" fill-opacity="0.15"/>
+  <polygon points="131.3,44.1 131.3,107.9 76.0,139.8 20.7,107.9 20.7,44.1 76.0,12.2" fill="none" stroke="#00d4ff" stroke-width="3.8"/>
+  <text x="76" y="87.4" font-family="Arial,sans-serif" font-weight="bold" font-size="70" fill="#ff6b35" text-anchor="middle">R</text>
+  <circle cx="109.4" cy="33.4" r="6.1" fill="#00d4ff"/>
+</svg>
