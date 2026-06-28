@@ -24,7 +24,9 @@ export default defineConfig({
           { src: 'icons/icons8-spain-bubbles-70.png', sizes: '70x70', type: 'image/png' },
           { src: 'icons/icons8-spain-bubbles-72.png', sizes: '72x72', type: 'image/png' },
           { src: 'icons/icons8-spain-bubbles-76.png', sizes: '76x76', type: 'image/png' },
-          { src: 'icons/icons8-spain-bubbles-96.png', sizes: '96x96', type: 'image/png', purpose: 'any maskable' },
+          { src: 'icons/icons8-spain-bubbles-96.png', sizes: '96x96', type: 'image/png' },
+          { src: 'icons/icon-192.svg', sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: 'icons/icon-512.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' },
         ],
       },
       workbox: {
