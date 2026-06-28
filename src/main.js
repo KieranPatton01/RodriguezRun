@@ -98,14 +98,27 @@ window.addEventListener('beforeinstallprompt', (e) => {
   // Stash the event so it can be triggered later.
   deferredPrompt = e;
 
-  // Only show the install prompt if we're on a mobile device
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  // Only show the install prompt if we're on a mobile device (Android)
+  const isMobile = /Android|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   if (isMobile) {
-    showInstallPrompt();
+    showInstallPrompt(false);
   }
 });
 
-function showInstallPrompt() {
+// Check for iOS since it doesn't fire beforeinstallprompt
+window.addEventListener('load', () => {
+  const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  
+  if (isIos && !isStandalone) {
+    // Slight delay to not interrupt loading immediately
+    setTimeout(() => {
+      showInstallPrompt(true);
+    }, 2000);
+  }
+});
+
+function showInstallPrompt(isIos) {
   // Don't show if already added
   if (document.getElementById('pwa-install-prompt')) return;
 
@@ -130,7 +143,11 @@ function showInstallPrompt() {
   promptDiv.style.maxWidth = '300px';
   
   const text = document.createElement('p');
-  text.innerText = 'Install Rodriguez Run as an app for full screen and better performance!';
+  if (isIos) {
+    text.innerHTML = 'To install the app on iOS:<br><br>Tap the <b>Share</b> icon below, then select <b>"Add to Home Screen"</b>.';
+  } else {
+    text.innerText = 'Install Rodriguez Run as an app for full screen and better performance!';
+  }
   text.style.margin = '0 0 15px 0';
   text.style.fontSize = '12px';
   text.style.lineHeight = '1.4';
@@ -141,7 +158,7 @@ function showInstallPrompt() {
   btnContainer.style.gap = '15px';
 
   const cancelBtn = document.createElement('button');
-  cancelBtn.innerText = 'LATER';
+  cancelBtn.innerText = isIos ? 'GOT IT' : 'LATER';
   cancelBtn.style.padding = '8px 16px';
   cancelBtn.style.backgroundColor = '#ff006e';
   cancelBtn.style.color = '#fff';
@@ -150,32 +167,35 @@ function showInstallPrompt() {
   cancelBtn.style.fontWeight = 'bold';
   cancelBtn.style.cursor = 'pointer';
 
-  const installBtn = document.createElement('button');
-  installBtn.innerText = 'INSTALL';
-  installBtn.style.padding = '8px 16px';
-  installBtn.style.backgroundColor = '#00d4ff';
-  installBtn.style.color = '#0d1b2a';
-  installBtn.style.border = 'none';
-  installBtn.style.borderRadius = '4px';
-  installBtn.style.fontWeight = 'bold';
-  installBtn.style.cursor = 'pointer';
-
-  installBtn.addEventListener('click', async () => {
-    promptDiv.remove();
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-      deferredPrompt = null;
-    }
-  });
-
   cancelBtn.addEventListener('click', () => {
     promptDiv.remove();
   });
 
   btnContainer.appendChild(cancelBtn);
-  btnContainer.appendChild(installBtn);
+
+  if (!isIos) {
+    const installBtn = document.createElement('button');
+    installBtn.innerText = 'INSTALL';
+    installBtn.style.padding = '8px 16px';
+    installBtn.style.backgroundColor = '#00d4ff';
+    installBtn.style.color = '#0d1b2a';
+    installBtn.style.border = 'none';
+    installBtn.style.borderRadius = '4px';
+    installBtn.style.fontWeight = 'bold';
+    installBtn.style.cursor = 'pointer';
+
+    installBtn.addEventListener('click', async () => {
+      promptDiv.remove();
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        deferredPrompt = null;
+      }
+    });
+    btnContainer.appendChild(installBtn);
+  }
+
   promptDiv.appendChild(text);
   promptDiv.appendChild(btnContainer);
   
