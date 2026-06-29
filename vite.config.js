@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.svg', 'icons/*.png', 'fonts/*'],
+      includeAssets: ['icons/*.png', 'fonts/*'],
       manifest: {
         name: 'Rodriguez Run — Sara\'s Safestay Adventure',
         short_name: 'RodriguezRun',

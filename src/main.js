@@ -110,8 +110,9 @@ window.addEventListener('load', () => {
   const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
   // window.navigator.standalone is Safari-specific. display-mode handles others.
   const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  const hasDismissedIosPrompt = localStorage.getItem('ios_pwa_dismissed') === 'true';
   
-  if (isIos && !isStandalone) {
+  if (isIos && !isStandalone && !hasDismissedIosPrompt) {
     // Slight delay to not interrupt loading immediately
     setTimeout(() => {
       showInstallPrompt(true);
@@ -169,6 +170,7 @@ function showInstallPrompt(isIos) {
   cancelBtn.style.cursor = 'pointer';
 
   cancelBtn.addEventListener('click', () => {
+    if (isIos) localStorage.setItem('ios_pwa_dismissed', 'true');
     promptDiv.remove();
   });
 

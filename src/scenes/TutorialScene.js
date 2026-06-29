@@ -187,7 +187,6 @@ export class TutorialScene extends Phaser.Scene {
       .setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(74);
 
     hitZone.on('pointerup', () => {
-      this._save.setHasSeenTutorial(true);
       Transitions.fadeOut(this, 'GameScene', {}, 500);
     });
   }
