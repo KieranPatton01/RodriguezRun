@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "generate-icons": "node public/generate-icons.js",
-    "deploy": "gh-pages -d dist"
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "devDependencies": {
     "gh-pages": "^6.3.0",
