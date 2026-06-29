@@ -384,11 +384,8 @@ export class MenuScene extends Phaser.Scene {
     const qrPrompt = document.getElementById('desktop-qr-prompt');
     if (qrPrompt) qrPrompt.remove();
 
-    if (this._save.get('hasSeenTutorial') === false) {
-      Transitions.fadeOut(this, 'TutorialScene', {}, 500);
-    } else {
-      Transitions.fadeOut(this, 'GameScene', {}, 500);
-    }
+    // Always show tutorial on play
+    Transitions.fadeOut(this, 'TutorialScene', {}, 500);
   }
 
   _openSettings() {

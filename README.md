@@ -1,6 +1,6 @@
-# RodriguezRun — Neo-Citadel Chronicles
+# Rodriguez Run — Sara's Safestay Adventure
 
-A production-quality **endless runner** set in Neo-Citadel, a futuristic European-inspired city. Play as **Mira**, an urban courier sprinting through neon-lit streets, baroque plazas, and tram corridors.
+A production-quality **endless runner** set in Madrid. Play as **Sara**, sprinting through the streets, dodging obstacles like trams and drones, and collecting Euros to unlock new characters like Stinky Sara, Fiancée Fernandez, and Abid!
 
 ## Tech Stack
 
@@ -18,13 +18,18 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000` in your browser.
+Open `http://localhost:5173` in your browser.
 
-## Build for Production
+## Build for Production & Deploy
 
 ```bash
 npm run build
 npm run preview  # Test the production build locally
+```
+
+To deploy to GitHub Pages:
+```bash
+npm run deploy
 ```
 
 ## Project Structure
@@ -32,16 +37,14 @@ npm run preview  # Test the production build locally
 ```
 /src
   /scenes          — BootScene, PreloadScene, MenuScene, GameScene, GameOverScene, SettingsScene, StatsScene
-  /entities        — Player, Obstacle (9 types), Coin, PowerUp (6 types), Gem
+  /entities        — Player, Obstacle, Coin, PowerUp, Gem
   /managers        — SpawnManager, ScoreManager, DifficultyManager, WorldManager, CameraManager, ParticleManager, AudioManager, InputManager, SaveManager
   /ui              — HUD, Buttons, FloatingText, AchievementPopup, Transitions
   /utils           — EventBus, ObjectPool, MathUtils, ChunkTemplates
   config.js        — Single source of truth for all game constants
   main.js          — Phaser game entry point
 /public
-  sw.js            — Service worker (manual fallback)
-  generate-icons.js — Node script to generate PWA icons
-  /icons           — PWA icon set (72–512px)
+  /icons           — PWA icon set (generated via RedKetchup)
 ```
 
 ## Gameplay Controls
@@ -72,16 +75,17 @@ All inter-system communication uses the singleton `EventBus` (`src/utils/EventBu
 All `Obstacle`, `Coin`, `PowerUp`, and `Gem` instances are managed by `ObjectPool` — no new allocations during gameplay.
 
 ### Procedural Generation
-`ChunkTemplates.js` defines 17 hand-crafted chunk patterns across 5 difficulty tiers. `SpawnManager` selects chunks using weighted-random selection based on the current difficulty tier.
+`ChunkTemplates.js` defines hand-crafted chunk patterns across 5 difficulty tiers. `SpawnManager` selects chunks using weighted-random selection based on the current difficulty tier.
 
 ### Difficulty Curve
-Speed ramps smoothly from 350px/s → 750px/s over 3 minutes using `mapRangeClamped`. Obstacle complexity and density increase through 5 tiers with moving hazards unlocking at Tier 3.
+Speed ramps smoothly and obstacle complexity increases through 5 tiers with moving hazards unlocking at Tier 3.
 
 ## PWA Features
 
-- ✅ Installable on iOS and Android
+- ✅ Installable on iOS (via Share menu) and Android (via automatic prompt)
+- ✅ Desktop QR Code Prompt to encourage mobile downloads
 - ✅ Offline play (service worker caches all assets)
-- ✅ Custom icons (72–512px)
+- ✅ Custom icons (16–512px)
 - ✅ Splash screen
 - ✅ Portrait orientation lock
 - ✅ Full-screen standalone mode
@@ -90,20 +94,14 @@ Speed ramps smoothly from 350px/s → 750px/s over 3 minutes using `mapRangeClam
 
 - **60 FPS target** on modern mobile devices
 - All entities use **object pooling** (zero GC pressure during gameplay)
-- All graphics are **programmatic** (no external image assets to load)
+- Graphics are heavily **programmatic**
 - Web Audio API used for SFX (no audio file loading)
 - **Delta-time movement** ensures consistent speed at any frame rate
 
-## Generating PWA Icons
+## Updating PWA Icons
 
-If you have the `canvas` npm package installed:
-
-```bash
-npm install canvas
-node public/generate-icons.js
-```
-
-Alternatively, place your own 512x512 PNG at `public/icons/icon-512.png` and let Vite PWA handle the rest.
+Icons are generated using [RedKetchup.io Favicon Generator](https://redketchup.io/favicon-generator). 
+To update the icons, generate a new set, download the zip, and extract the PNG files into the `public/icons/` folder. Ensure `vite.config.js` and `index.html` point to the correct filenames.
 
 ## License
 

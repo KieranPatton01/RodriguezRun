@@ -108,7 +108,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // Check for iOS since it doesn't fire beforeinstallprompt
 window.addEventListener('load', () => {
   const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  // window.navigator.standalone is Safari-specific. display-mode handles others.
+  const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
   
   if (isIos && !isStandalone) {
     // Slight delay to not interrupt loading immediately
